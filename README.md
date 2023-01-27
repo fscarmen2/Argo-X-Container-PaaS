@@ -24,6 +24,7 @@
 * vmess 和 vless 的 uuid，trojan 和 shadowsocks 的 password，各协议的 ws 路径既可以自定义，又或者使用默认值
 * 集成哪吒探针，可以自由选择是否安装
 * 前端 js 定时保活，会玩的用户可以根据具体情况修改间隔时间
+* 节点信息以 V2rayN / Clash / 小火箭 链接方式输出
 
 ## 部署:
 * 镜像 `fscarmen/argo-x:latest`
@@ -62,8 +63,7 @@
 
 <img width="909" alt="image" src="https://user-images.githubusercontent.com/92626977/214797317-bc60c51b-9518-4db1-9878-f6c8eb52a9b3.png">
 
-<img width="1024" alt="image" src="https://user-images.githubusercontent.com/92626977/214797790-1cea70b5-2d57-433a-97a3-4022c36e9a08.png">
-
+<img width="1340" alt="image" src="https://user-images.githubusercontent.com/92626977/215122040-7f3ba11b-4875-412c-a9c9-fefa05e336c5.png">
 
 ## 在 Doprax 部署重点
 
@@ -72,8 +72,6 @@
 <img width="1663" alt="image" src="https://user-images.githubusercontent.com/92626977/214801019-a1e9cf5d-67f0-49c5-956b-927f50bbb207.png">
 
 <img width="1000" alt="image" src="https://user-images.githubusercontent.com/92626977/214807633-18b1a1fe-a3b7-4f9b-99bd-0ef56e3a259c.png">
-
-
 
 ## 鸣谢下列作者的文章和项目:
 * 前端 JS 在大佬 Nike Jeff 的项目 基础上，为了通用性和扩展功能作修改，https://github.com/hrzyang/glitch-trojan
