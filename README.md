@@ -25,6 +25,10 @@
 * 集成哪吒探针，可以自由选择是否安装
 * 前端 js 定时保活，会玩的用户可以根据具体情况修改间隔时间
 * 节点信息以 V2rayN / Clash / 小火箭 链接方式输出
+* Xray 文件重新编译官方文件增加隐秘性，修改了运行时的显示信息，文件为: https://github.com/XTLS/Xray-core/blob/main/core/core.go
+
+<img width="718" alt="image" src="https://user-images.githubusercontent.com/92626977/215277537-ff358dc1-7696-481f-b8e4-74f0cdff30f4.png">
+
 
 ## 部署:
 * 镜像 `fscarmen/argo-x:latest`

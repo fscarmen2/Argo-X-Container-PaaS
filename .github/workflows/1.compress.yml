@@ -11,9 +11,6 @@ jobs:
         EMAIL: ${{ secrets.GH_EMAIL }}
         NAME: ${{ secrets.GH_USERNAME }}
         TOKEN: ${{ secrets.TOKEN }}
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        DOCKERHUB_REPOSITORY: ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}:test
 
       steps:
       - name: Compress files
