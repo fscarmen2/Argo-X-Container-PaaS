@@ -201,10 +201,14 @@ generate_argo() {
 #!/usr/bin/env bash
   
 # 下载并运行 Argo
-[ ! -e cloudflared ] && wget -O cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x cloudflared
-if [[ -e cloudflared && ! \$(ps -ef) =~ cloudflared ]]; then
+check_file() {
+  [ ! -e cloudflared ] && wget -O cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 && chmod +x cloudflared
+}
+
+run() {
+if [[ -e cloudflared && ! \$(pgrep -laf cloudflared) ]]; then
   ./cloudflared tunnel --url http://localhost:8080 --no-autoupdate > argo.log 2>&1 &
-  sleep 15
+  sleep 10
   ARGO=\$(cat argo.log | grep -oE "https://.*[a-z]+cloudflare.com" | sed "s#https://##")
   VMESS="{ \"v\": \"2\", \"ps\": \"Argo-Vmess\", \"add\": \"www.digitalocean.com\", \"port\": \"443\", \"id\": \"${UUID}\", \"aid\": \"0\", \"scy\": \"none\", \"net\": \"ws\", \"type\": \"none\", \"host\": \"\${ARGO}\", \"path\": \"/${WSPATH}-vmess\", \"tls\": \"tls\", \"sni\": \"\${ARGO}\", \"alpn\": \"\" }"
 
@@ -243,7 +247,11 @@ Clash:
 *******************************************
 EOF
   cat list
-  fi
+fi
+}
+check_file
+run
+wait
 ABC
 }
 
@@ -258,7 +266,7 @@ NEZHA_KEY=${NEZHA_KEY}
 
 # 检测是否已运行
 check_run() {
-  [[ \$(ps aux) =~ nezha-agent ]] && echo "哪吒客户端正在运行中" && exit
+  [[ \$(pgrep -laf nezha-agent) ]] && echo "哪吒客户端正在运行中" && exit
 }
 
 # 三个变量不全则不安装哪吒客户端
@@ -284,11 +292,13 @@ check_run
 check_variable
 download_agent
 run
+wait
 EOF
 }
 
 generate_config
 generate_argo
 generate_nezha
-[ -e nezha.sh ] && bash nezha.sh
-[ -e argo.sh ] && bash argo.sh
+[ -e nezha.sh ] && bash nezha.sh 2>&1 &
+[ -e argo.sh ] && bash argo.sh 2>&1 &
+wait
