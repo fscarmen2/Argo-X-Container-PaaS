@@ -8,12 +8,12 @@ var request = require("request");
 var fs = require("fs");
 var path = require("path");
 
-app.get("/", (req, res) => {
+app.get("/", function (req, res) {
   res.send("hello world");
 });
 
 //获取系统进程表
-app.get("/status", (req, res) => {
+app.get("/status", function (req, res) {
   let cmdStr = "ps -ef | grep  -v 'defunct'";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
@@ -25,7 +25,7 @@ app.get("/status", (req, res) => {
 });
 
 //获取系统监听端口
-app.get("/listen", (req, res) => {
+app.get("/listen", function (req, res) {
     let cmdStr = "ss -nltp";
     exec(cmdStr, function (err, stdout, stderr) {
       if (err) {
@@ -37,60 +37,65 @@ app.get("/listen", (req, res) => {
   });
 
 //获取节点数据
-app.get("/list", (req, res) => {
+app.get("/list", function (req, res) {
     let cmdStr = "cat list";
     exec(cmdStr, function (err, stdout, stderr) {
       if (err) {
         res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
-      } else {
+      }
+      else {
         res.type("html").send("<pre>节点数据：\n\n" + stdout + "</pre>");
       }
     });
   });
 
 //启动web
-app.get("/start", (req, res) => {
+app.get("/start", function (req, res) {
   let cmdStr = "[ -e entrypoint.sh ] && bash entrypoint.sh; chmod +x ./web.js && ./web.js -c ./config.json >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("Web 执行错误：" + err);
-    } else {
+    }
+    else {
       res.send("Web 执行结果：" + "启动成功!");
     }
   });
 });
 
 //启动argo
-app.get("/argo", (req, res) => {
+app.get("/argo", function (req, res) {
   let cmdStr = "/bin/bash argo.sh >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("Argo 部署错误：" + err);
-    } else {
+    }
+    else {
       res.send("Argo 执行结果：" + "启动成功!");
     }
   });
 });
 
 //启动哪吒
-app.get("/nezha", (req, res) => {
+app.get("/nezha", function (req, res) {
   let cmdStr = "/bin/bash nezha.sh >/dev/null 2>&1 &";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("哪吒部署错误：" + err);
-    } else {
+    }
+    else {
       res.send("哪吒执行结果：" + "启动成功!");
     }
   });
 });
 
 //获取系统版本、内存信息
-app.get("/info", (req, res) => {
+app.get("/info", function (req, res) {
   let cmdStr = "cat /etc/*release | grep -E ^NAME";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.send("命令行执行错误：" + err);
-    } else {
+    }
+    else {
       res.send(
         "命令行执行结果：\n" +
           "Linux System:" +
@@ -104,7 +109,7 @@ app.get("/info", (req, res) => {
 });
 
 //文件系统只读测试
-app.get("/test", (req, res) => {
+app.get("/test", function (req, res) {
   fs.writeFile("./test.txt", "这里是新创建的文件内容!", function (err) {
     if (err) {
       res.send("创建文件失败，文件系统权限为只读：" + err);
@@ -122,7 +127,8 @@ function keep_web_alive() {
   exec("curl -m8 127.0.0.1:" + port, function (err, stdout, stderr) {
     if (err) {
       console.log("保活-请求主页-命令行执行错误：" + err);
-    } else {
+    }
+    else {
       console.log("保活-请求主页-命令行执行成功，响应报文:" + stdout);
     }
   });
@@ -197,24 +203,26 @@ function keep_nezha_alive() {
   });
 }
 setInterval(keep_nezha_alive, 45 * 1000);
-// keepalive end 
+// keepalive end
 
 app.use(
   "/",
   createProxyMiddleware({
-    target: "http://127.0.0.1:8080/", // 需要跨域处理的请求地址
     changeOrigin: true, // 默认false，是否需要改变原始主机头为目标URL
-    ws: true, // 是否代理websockets
+    onProxyReq: function onProxyReq(proxyReq, req, res) {},
     pathRewrite: {
       // 请求中去除/
-      "^/": "/",
+      "^/": "/"
     },
-    onProxyReq: function onProxyReq(proxyReq, req, res) {},
+
+    target: "http://127.0.0.1:8080/", // 需要跨域处理的请求地址
+
+    ws: true // 是否代理websockets
   })
 );
 
 //启动核心脚本运行web,哪吒和argo
-exec("bash entrypoint.sh", (err, stdout, stderr) => {
+exec("bash entrypoint.sh", function (err, stdout, stderr) {
   if (err) {
     console.error(err);
     return;
