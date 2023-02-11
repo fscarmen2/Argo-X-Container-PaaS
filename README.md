@@ -8,6 +8,7 @@
 
 - [项目特点](README.md#项目特点)
 - [部署](README.md#部署)
+- [Argo Token的获取](README.md#argo-token-的获取)
 - [在 Koyeb 部署重点](README.md#在-koyeb-部署重点)
 - [在 Doprax 部署重点](README.md#在-doprax-部署重点)
 - [鸣谢下列作者的文章和项目](README.md#鸣谢下列作者的文章和项目)
@@ -19,11 +20,11 @@
 * 适用于通过 dockerhub 上已有的镜像或 Dockerfile 来建实例的平台
 * 在平台上部署 Xray，采用的方案为 Argo + Xray + WebSocket + TLS
 * 在浏览器查看系统各项信息，方便直观
-* 使用 CloudFlare 的 Argo 隧道，直接优选 + 隧道，CDN 不用再做 workers
+* 使用 CloudFlare 的 Argo 隧道，既支持没有认证的临时隧道，又支持通过 token 申请的固定域名(需要信用卡认证，有免费套餐），直接优选 + 隧道，CDN 不用再做 workers
 * 回流分流，同时支持 Xray 4 种主流协议: vless /  vmess / trojan / shadowsocks
 * vmess 和 vless 的 uuid，trojan 和 shadowsocks 的 password，各协议的 ws 路径既可以自定义，又或者使用默认值
 * 集成哪吒探针，可以自由选择是否安装
-* 前端 js 定时保活，会玩的用户可以根据具体情况修改间隔时间
+* 前端 js 定时和 pm2 配合保活，务求让恢复时间减到最小
 * 节点信息以 V2rayN / Clash / 小火箭 链接方式输出
 * Xray 文件重新编译官方文件增加隐秘性，修改了运行时的显示信息，文件为: https://github.com/XTLS/Xray-core/blob/main/core/core.go
 
@@ -33,7 +34,7 @@
 ## 部署:
 * 镜像 `fscarmen/argo-x:latest`
 
-* PaaS 平台用到的变量
+* PaaS 平台用到的变量，在 `entrypoint.sh` 文件的前面 4-12 行修改
   | 变量名        | 是否必须 | 默认值 | 备注 |
   | ------------ | ------ | ------ | ------ |
   | UUID         | 否 | de04add9-5c68-8bab-950c-08cd5320df18 | 可在线生成 https://www.zxgj.cn/g/uuid |
@@ -41,6 +42,8 @@
   | NEZHA_SERVER | 否 |        | 哪吒探针服务端的 IP 或域名 |
   | NEZHA_PORT   | 否 |        | 哪吒探针服务端的端口 |
   | NEZHA_KEY    | 否 |        | 哪吒探针客户端专用 Key |
+  | ARGO_TOKEN   | 否 |        | Argo 的 Token，ARGO_TOKEN 与 ARGO_DOMAIN 必需一起填了才能生效 |
+  | ARGO_DOMAIN  | 否 |        | Argo 的域名，ARGO_TOKEN 与 ARGO_DOMAIN 必需一起填了才能生效 |
 
 * 需要应用的 js
   | 命令 | 说明 |
@@ -57,13 +60,24 @@
   | DOCKER_PASSWORD | Dockerhub 密码 |
   | DOCKER_REPO     | Dockerhub 库名 |
 
+
+## Argo Token 的获取
+
+详细教程: [群晖套件：Cloudflare Tunnel 内网穿透中文教程 支持DSM6、7](https://imnks.com/5984.html)
+
+<img width="1409" alt="image" src="https://user-images.githubusercontent.com/92626977/218253461-c079cddd-3f4c-4278-a109-95229f1eb299.png">
+
+<img width="1619" alt="image" src="https://user-images.githubusercontent.com/92626977/218253838-aa73b63d-1e8a-430e-b601-0b88730d03b0.png">
+
+<img width="1155" alt="image" src="https://user-images.githubusercontent.com/92626977/218253971-60f11bbf-9de9-4082-9e46-12cd2aad79a1.png">
+
 ## 在 Koyeb 部署重点
 
 这里只作重点的展示，更详细可以参考项目: https://github.com/fscarmen2/V2-for-Koyeb
 
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&name=argox&ports=3000;http;/&env[UUID]=de04add9-5c68-8bab-950c-08cd5320df18&env[NEZHA_SERVER]=server%20domain%20or%20ip&env[NEZHA_PORT]=server%20port&env[NEZHA_KEY]=agent%20key&image=docker.io/fscarmen/argo-x)
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&name=argox&ports=3000;http;/&env[UUID]=de04add9-5c68-8bab-950c-08cd5320df18&env[NEZHA_SERVER]=server%20domain%20or%20ip&env[NEZHA_PORT]=server%20port&env[NEZHA_KEY]=agent%20key&env[ARGO_TOKEN]=argo%20token&env[ARGO_DOMAIN]=Argo%20domain&image=docker.io/fscarmen/argo-x)
 
-![image](https://user-images.githubusercontent.com/92626977/214794752-9df27bee-66e7-4d79-855f-940e85dab8c3.png)
+<img width="680" alt="image" src="https://user-images.githubusercontent.com/92626977/218254134-20258fd8-f925-4f17-97f6-9a46cc28b364.png">
 
 <img width="909" alt="image" src="https://user-images.githubusercontent.com/92626977/214797317-bc60c51b-9518-4db1-9878-f6c8eb52a9b3.png">
 
