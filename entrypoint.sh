@@ -287,10 +287,14 @@ EOF
 }
 
 generate_pm2_file() {
-  [[ -z "${ARGO_TOKEN}" || -z "${ARGO_DOMAIN}" ]] && ARGO_ARGS="tunnel --url http://localhost:8080 --no-autoupdate > argo.log" || ARGO_ARGS="tunnel --no-autoupdate run --token ${ARGO_TOKEN}"
+  [[ -z "${ARGO_TOKEN}" || -z "${ARGO_DOMAIN}" ]] && ARGO_ARGS="tunnel --url http://localhost:8080 --no-autoupdate" || ARGO_ARGS="tunnel --no-autoupdate run --token ${ARGO_TOKEN}"
   cat > ecosystem.config.js << EOF
 module.exports = {
   "apps":[
+      {
+          "name":"web",
+          "script":"/app/web.js run"
+      },
       {
           "name":"argo",
           "script":"cloudflared",
