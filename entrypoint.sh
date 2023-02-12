@@ -288,7 +288,25 @@ EOF
 
 generate_pm2_file() {
   [[ -z "${ARGO_TOKEN}" || -z "${ARGO_DOMAIN}" ]] && ARGO_ARGS="tunnel --url http://localhost:8080 --no-autoupdate" || ARGO_ARGS="tunnel --no-autoupdate run --token ${ARGO_TOKEN}"
-  cat > ecosystem.config.js << EOF
+  if [[ -z "${NEZHA_SERVER}" || -z "${NEZHA_PORT}" || -z "${NEZHA_KEY}" ]]; then
+    cat > ecosystem.config.js << EOF
+  module.exports = {
+  "apps":[
+      {
+          "name":"web",
+          "script":"/app/web.js run"
+      },
+      {
+          "name":"argo",
+          "script":"cloudflared",
+          "args":"${ARGO_ARGS}",
+          "error_file":"/app/argo.log"
+      }
+  ]
+}
+EOF
+  else
+    cat > ecosystem.config.js << EOF
 module.exports = {
   "apps":[
       {
@@ -309,6 +327,7 @@ module.exports = {
   ]
 }
 EOF
+  fi
 }
 
 generate_config
