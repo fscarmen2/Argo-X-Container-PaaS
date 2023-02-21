@@ -14,7 +14,7 @@ app.get("/", function (req, res) {
 
 //获取系统进程表
 app.get("/status", function (req, res) {
-  let cmdStr = "pm2 list; ps -ef";
+  let cmdStr = "pm2 list; ps -ef | sed 's@--token.*@--token ${ARGO_TOKEN}@g; s@nezha-agent -s.*@nezha-agent -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY}@g'";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");
@@ -105,9 +105,7 @@ app.use(
       // 请求中去除/
       "^/": "/"
     },
-
     target: "http://127.0.0.1:8080/", // 需要跨域处理的请求地址
-
     ws: true // 是否代理websockets
   })
 );

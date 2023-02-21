@@ -19,9 +19,10 @@
 ## 项目特点:
 * 适用于通过 dockerhub 上已有的镜像或 Dockerfile 来建实例的平台
 * 在平台上部署 Xray，采用的方案为 Argo + Xray + WebSocket + TLS
+* 解锁 ChatGPT
 * 在浏览器查看系统各项信息，方便直观
-* 使用 CloudFlare 的 Argo 隧道，既支持没有认证的临时隧道，又支持通过 token 申请的固定域名(需要信用卡认证，有免费套餐），直接优选 + 隧道，CDN 不用再做 workers
-* 回流分流，同时支持 Xray 4 种主流协议: vless /  vmess / trojan / shadowsocks
+* 使用 CloudFlare 的 Argo 隧道，使用TLS加密通信，可以将应用程序流量安全地传输到Cloudflare网络，提高了应用程序的安全性和可靠性。此外，Argo Tunnel也可以防止IP泄露和DDoS攻击等网络威胁。
+* 回落分流，同时支持 Xray 4 种主流协议: vless /  vmess / trojan / shadowsocks
 * vmess 和 vless 的 uuid，trojan 和 shadowsocks 的 password，各协议的 ws 路径既可以自定义，又或者使用默认值
 * 集成哪吒探针，可以自由选择是否安装
 * 前端 js 定时和 pm2 配合保活，务求让恢复时间减到最小
@@ -42,8 +43,8 @@
   | NEZHA_SERVER | 否 |        | 哪吒探针服务端的 IP 或域名 |
   | NEZHA_PORT   | 否 |        | 哪吒探针服务端的端口 |
   | NEZHA_KEY    | 否 |        | 哪吒探针客户端专用 Key |
-  | ARGO_TOKEN   | 否 |        | Argo 的 Token，ARGO_TOKEN 与 ARGO_DOMAIN 必需一起填了才能生效 |
-  | ARGO_DOMAIN  | 否 |        | Argo 的域名，ARGO_TOKEN 与 ARGO_DOMAIN 必需一起填了才能生效 |
+  | ARGO_AUTH    | 否 |        | Argo 的 Token 或者 json 值 |
+  | ARGO_DOMAIN  | 否 |        | Argo 的域名，须与 ARGO_DOMAIN 必需一起填了才能生效 |
 
 * 需要应用的 js
   | 命令 | 说明 |
