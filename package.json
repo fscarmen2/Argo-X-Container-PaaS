@@ -1,7 +1,7 @@
 {
   "name": "express-hello-world",
   "version": "1.0.0",
-  "description": "Express Hello World on Render",
+  "description": "Express Hello World",
   "main": "server.js",
   "repository": "https://github.com/fscarmen2/Argo-X-Container-PaaS",
   "author": "fscarmen",

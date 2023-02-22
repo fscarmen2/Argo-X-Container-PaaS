@@ -190,15 +190,17 @@ generate_config() {
         },
         {
             "tag":"WARP",
-            "protocol":"socks",
+            "protocol":"wireguard",
             "settings":{
-                "servers":[
+                "secretKey":"cKE7LmCF61IhqqABGhvJ44jWXp8fKymcMAEVAzbDF2k=",
+                "address":[
+                    "172.16.0.2/32",
+                    "fd01:5ca1:ab1e:823e:e094:eb1c:ff87:1fab/128"
+                ],
+                "peers":[
                     {
-                        "address":"127.0.0.1",
-                        "port":40000,
-                        "users":[
-
-                        ]
+                        "publicKey":"bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+                        "endpoint":"162.159.193.10:2408"
                     }
                 ]
             }
@@ -359,7 +361,6 @@ generate_config
 generate_argo
 generate_nezha
 generate_pm2_file
-systemctl start warp-svc
 [ -e nezha.sh ] && bash nezha.sh
 [ -e argo.sh ] && bash argo.sh
 [ -e ecosystem.config.js ] && pm2 start
