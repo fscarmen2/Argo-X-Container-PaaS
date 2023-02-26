@@ -1,3 +1,5 @@
+const username = process.env.WEB_USERNAME || "admin";
+const password = process.env.WEB_PASSWORD || "password";
 const port = process.env.PORT || 3000;
 const express = require("express");
 const app = express();
@@ -7,14 +9,25 @@ const { createProxyMiddleware } = require("http-proxy-middleware");
 var request = require("request");
 var fs = require("fs");
 var path = require("path");
+const auth = require("basic-auth");
 
 app.get("/", function (req, res) {
   res.send("hello world");
 });
 
+// 页面访问密码
+app.use((req, res, next) => {
+  const user = auth(req);
+  if (user && user.name === username && user.pass === password) {
+    return next();
+  }
+  res.set("WWW-Authenticate", 'Basic realm="Node"');
+  return res.status(401).send();
+});
+
 //获取系统进程表
 app.get("/status", function (req, res) {
-  let cmdStr = "pm2 list; ps -ef | sed 's@--token.*@--token ${ARGO_TOKEN}@g; s@nezha-agent -s.*@nezha-agent -s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY}@g'";
+  let cmdStr = "pm2 list; ps -ef";
   exec(cmdStr, function (err, stdout, stderr) {
     if (err) {
       res.type("html").send("<pre>命令行执行错误：\n" + err + "</pre>");

@@ -33,9 +33,17 @@
 
 
 ## 部署:
-* 镜像 `fscarmen/argo-x:latest`
+### 镜像 `fscarmen/argo-x:latest`
 
-* PaaS 平台用到的变量，在 `entrypoint.sh` 文件的前面 4-12 行修改
+### PaaS 平台用到的变量:
+ 
+* 在 `server.js` 文件的第1、2行修改查询网页的用户名和密码
+  | 变量名        | 是否必须 | 默认值 | 备注 |
+  | ------------ | ------ | ------ | ------ |
+  | WEB_USERNAME | 是 | admin | 网页的用户名 |
+  | WEB_PASSWORD | 是 | password | 网页的密码 |
+
+* 在 `entrypoint.sh` 文件的前面 4-12 行修改；访问页面的认证在 `server.js` 文件的第1、2行修改必填
   | 变量名        | 是否必须 | 默认值 | 备注 |
   | ------------ | ------ | ------ | ------ |
   | UUID         | 否 | de04add9-5c68-8bab-950c-08cd5320df18 | 可在线生成 https://www.zxgj.cn/g/uuid |
@@ -76,7 +84,7 @@
 
 这里只作重点的展示，更详细可以参考项目: https://github.com/fscarmen2/V2-for-Koyeb
 
-[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&name=argox&ports=3000;http;/&env[UUID]=de04add9-5c68-8bab-950c-08cd5320df18&env[NEZHA_SERVER]=server%20domain%20or%20ip&env[NEZHA_PORT]=server%20port&env[NEZHA_KEY]=agent%20key&env[ARGO_TOKEN]=argo%20token&env[ARGO_DOMAIN]=Argo%20domain&image=docker.io/fscarmen/argo-x)
+[![Deploy to Koyeb](https://www.koyeb.com/static/images/deploy/button.svg)](https://app.koyeb.com/deploy?type=docker&name=argox&ports=3000;http;/&env[UUID]=de04add9-5c68-8bab-950c-08cd5320df18&env[NEZHA_SERVER]=server%20domain%20or%20ip&env[NEZHA_PORT]=server%20port&env[NEZHA_KEY]=agent%20key&env[ARGO_AUTH]=argo%20token%20or%20json&env[ARGO_DOMAIN]=Argo%20domain&env[WEB_USERNAME]=Web%20username&env[WEB_PASSWORD]=Web%20password&image=docker.io/fscarmen/argo-x)
 
 <img width="680" alt="image" src="https://user-images.githubusercontent.com/92626977/218254134-20258fd8-f925-4f17-97f6-9a46cc28b364.png">
 
