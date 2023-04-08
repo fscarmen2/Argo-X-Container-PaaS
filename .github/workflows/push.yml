@@ -1,4 +1,4 @@
-name: "2.Build and push images"
+name: "Build and push images"
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
 jobs:
   Building:
       runs-on: ubuntu-latest
-      name: "2. Build Argo-X images"
+      name: "Build Argo-X images"
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
