@@ -49,9 +49,9 @@
   | UUID         | 否 | de04add9-5c68-8bab-950c-08cd5320df18 | 可在线生成 https://www.zxgj.cn/g/uuid |
   | WSPATH       | 否 | argo | 勿以 / 开头，各协议路径为 `/WSPATH-协议`，如 `/argo-vless`,`/argo-vmess`,`/argo-trojan`,`/argo-shadowsocks` |
   | NEZHA_SERVER | 否 |        | 哪吒探针服务端的 IP 或域名，与 NEZHA_ARGO 只能同时存在一个 |
-  | NEZHA_ARGO   | 否 |        | 哪吒探针服务端的 argo 隧道域名，与 NEZHA_SERVER 只能同时存在一个 |
   | NEZHA_PORT   | 否 |        | 哪吒探针服务端的端口，如果服务端是 Argo，则不需要填写 |
   | NEZHA_KEY    | 否 |        | 哪吒探针客户端专用 Key |
+  | NEZHA_TLS    | 否 |        | 哪吒探针是否启用 SSL/TLS 加密 ，如不启用不要该变量，如要启用填"1" |
   | ARGO_AUTH    | 否 |        | Argo 的 Token 或者 json 值 |
   | ARGO_DOMAIN  | 否 |        | Argo 的域名，须与 ARGO_DOMAIN 必需一起填了才能生效 |
 

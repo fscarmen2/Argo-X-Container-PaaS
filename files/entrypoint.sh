@@ -291,8 +291,7 @@ check_run() {
 
 # 三个变量不全则不安装哪吒客户端
 check_variable() {
-  [ -z "\${NEZHA_KEY}" ] && exit
-  [[ ( -z "\${NEZHA_SERVER}" || -z "\${NEZHA_PORT}" ) && -z "\${NEZHA_ARGO}" ]] && exit
+  [[ ( -z "\${NEZHA_SERVER}" || -z "\${NEZHA_PORT}" ) || -z "\${NEZHA_KEY}" ]] && exit
 }
 
 # 下载最新版本 Nezha Agent
@@ -318,7 +317,9 @@ generate_pm2_file() {
     ARGO_ARGS="tunnel --edge-ip-version auto --no-autoupdate --logfile argo.log --loglevel info --url http://localhost:8080"
   fi
 
-  if [[ -n "${NEZHA_PORT}" && -n "${NEZHA_KEY}" && -n "${NEZHA_SERVER}" && -z "${NEZHA_ARGO}" ]]; then
+  TLS=${NEZHA_TLS:+'--tls'}
+
+  if [[ -n "${NEZHA_SERVER}" && -n "${NEZHA_PORT}" && -n "${NEZHA_KEY}" ]]; then
     cat > ecosystem.config.js << EOF
 module.exports = {
   "apps":[
@@ -334,33 +335,7 @@ module.exports = {
       {
           "name":"nezha",
           "script":"/app/nezha-agent",
-          "args":"-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY}"
-      }
-  ]
-}
-EOF
-  elif [[ -n "${NEZHA_KEY}" && -z "${NEZHA_SERVER}" && -n "${NEZHA_ARGO}" ]]; then
-    cat > ecosystem.config.js << EOF
-module.exports = {
-  "apps":[
-      {
-          "name":"web",
-          "script":"/app/web.js run"
-      },
-      {
-          "name":"argo",
-          "script":"cloudflared",
-          "args":"${ARGO_ARGS}"
-      },
-      {
-          "name":"nezha server",
-          "script":"cloudflared",
-          "args":"access tcp --hostname ${NEZHA_ARGO} --listener localhost:55556"
-      },
-      {
-          "name":"nezha",
-          "script":"/app/nezha-agent",
-          "args":"-s localhost:55556 -p ${NEZHA_KEY}"
+          "args":"-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}" 
       }
   ]
 }
