@@ -291,15 +291,17 @@ check_run() {
 
 # 三个变量不全则不安装哪吒客户端
 check_variable() {
-  [[ ( -z "\${NEZHA_SERVER}" || -z "\${NEZHA_PORT}" ) || -z "\${NEZHA_KEY}" ]] && exit
+  [[ -z "\${NEZHA_SERVER}" || -z "\${NEZHA_PORT}" || -z "\${NEZHA_KEY}" ]] && exit
 }
 
 # 下载最新版本 Nezha Agent
 download_agent() {
   if [ ! -e nezha-agent ]; then
-    URL=\$(wget -qO- -4 "https://api.github.com/repos/naiba/nezha/releases/latest" | grep -o "https.*linux_amd64.zip")
-    wget -t 2 -T 10 -N \${URL}
-    unzip -qod ./ nezha-agent_linux_amd64.zip && rm -f nezha-agent_linux_amd64.zip
+    URL=\$(wget -qO- "https://api.github.com/repos/naiba/nezha/releases/latest" | grep -o "https.*linux_amd64.zip")
+    URL=\${URL:-https://github.com/naiba/nezha/releases/download/v0.14.11/nezha-agent_linux_amd64.zip}
+    wget \${URL}
+    unzip -qod ./ nezha-agent_linux_amd64.zip
+    rm -f nezha-agent_linux_amd64.zip
   fi
 }
 
@@ -342,7 +344,7 @@ module.exports = {
 EOF
   else  
     cat > ecosystem.config.js << EOF
-  module.exports = {
+module.exports = {
   "apps":[
       {
           "name":"web",
