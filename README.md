@@ -36,12 +36,6 @@
 ### 镜像 `fscarmen/argo-x:latest`
 
 ### PaaS 平台用到的变量:
- 
-* 在 `server.js` 文件的第1、2行修改查询网页的用户名和密码
-  | 变量名        | 是否必须 | 默认值 | 备注 |
-  | ------------ | ------ | ------ | ------ |
-  | WEB_USERNAME | 是 | admin | 网页的用户名 |
-  | WEB_PASSWORD | 是 | password | 网页的密码 |
 
 * PaaS 平台设置的环境变量
   | 变量名        | 是否必须 | 默认值 | 备注 |
@@ -54,8 +48,10 @@
   | NEZHA_TLS    | 否 |        | 哪吒探针是否启用 SSL/TLS 加密 ，如不启用不要该变量，如要启用填"1" |
   | ARGO_AUTH    | 否 |        | Argo 的 Token 或者 json 值 |
   | ARGO_DOMAIN  | 否 |        | Argo 的域名，须与 ARGO_DOMAIN 必需一起填了才能生效 |
+  | WEB_USERNAME | 否 | admin  | 网页的用户名 |
+  | WEB_PASSWORD | 否 | password | 网页的密码 |
 
-* 需要应用的 js
+* 路径（path）
   | 命令 | 说明 |
   | ---- |------ |
   | <URL>/list | 查看节点数据 |
