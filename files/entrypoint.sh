@@ -3,6 +3,8 @@
 # 设置各变量
 WSPATH=${WSPATH:-'argo'}
 UUID=${UUID:-'de04add9-5c68-8bab-950c-08cd5320df18'}
+WEB_USERNAME=${WEB_USERNAME:-'admin'}
+WEB_PASSWORD=${WEB_PASSWORD:-'password'}
 
 generate_config() {
   cat > config.json << EOF
@@ -229,7 +231,27 @@ generate_argo() {
 
 argo_type() {
   if [[ -n "\${ARGO_AUTH}" && -n "\${ARGO_DOMAIN}" ]]; then
-    [[ \$ARGO_AUTH =~ TunnelSecret ]] && echo \$ARGO_AUTH > tunnel.json && echo -e "tunnel: \$(cut -d\" -f12 <<< \$ARGO_AUTH)\ncredentials-file: /app/tunnel.json" > tunnel.yml
+    [[ \$ARGO_AUTH =~ TunnelSecret ]] && echo \$ARGO_AUTH > tunnel.json && cat > tunnel.yml << EOF
+tunnel: \$(cut -d\" -f12 <<< \$ARGO_AUTH)
+credentials-file: /app/tunnel.json
+protocol: http2
+
+ingress:
+  - hostname: \$ARGO_DOMAIN
+    service: http://localhost:8080
+EOF
+
+    [ -n "\${SSH_DOMAIN}" ] && cat >> tunnel.yml << EOF
+  - hostname: \$SSH_DOMAIN
+    service: http://localhost:222
+EOF
+
+    cat >> tunnel.yml << EOF
+    originRequest:
+      noTLSVerify: true
+  - service: http_status:404
+EOF
+
   else
     ARGO_DOMAIN=\$(cat argo.log | grep -o "info.*https://.*trycloudflare.com" | sed "s@.*https://@@g" | tail -n 1)
   fi
@@ -286,7 +308,7 @@ generate_nezha() {
 
 # 检测是否已运行
 check_run() {
-  [[ \$(pgrep -laf nezha-agent) ]] && echo "哪吒客户端正在运行中" && exit
+  [[ \$(pgrep -lafx nezha-agent) ]] && echo "哪吒客户端正在运行中" && exit
 }
 
 # 三个变量不全则不安装哪吒客户端
@@ -311,9 +333,39 @@ download_agent
 EOF
 }
 
+generate_ttyd() {
+  cat > ttyd.sh << EOF
+#!/usr/bin/env bash
+
+# 检测是否已运行
+check_run() {
+  [[ \$(pgrep -lafx ttyd) ]] && echo "ttyd 正在运行中" && exit
+}
+
+# ssh argo 域名不设置，则不安装哪吒客户端
+check_variable() {
+  [ -z "\${SSH_DOMAIN}" ] && exit
+}
+
+# 下载最新版本 ttyd
+download_ttyd() {
+  if [ ! -e ttyd ]; then
+    URL=\$(wget -qO- "https://api.github.com/repos/tsl0922/ttyd/releases/latest" | grep -o "https.*x86_64")
+    URL=\${URL:-https://github.com/tsl0922/ttyd/releases/download/1.7.3/ttyd.x86_64}
+    wget -O ttyd \${URL}
+    chmod +x ttyd
+  fi
+}
+
+check_run
+check_variable
+download_ttyd
+EOF
+}
+
 generate_pm2_file() {
   if [[ -n "${ARGO_AUTH}" && -n "${ARGO_DOMAIN}" ]]; then
-    [[ $ARGO_AUTH =~ TunnelSecret ]] && ARGO_ARGS="tunnel --edge-ip-version auto --config tunnel.yml --url http://localhost:8080 run"
+    [[ $ARGO_AUTH =~ TunnelSecret ]] && ARGO_ARGS="tunnel --edge-ip-version auto --config tunnel.yml run"
     [[ $ARGO_AUTH =~ ^[A-Z0-9a-z=]{120,250}$ ]] && ARGO_ARGS="tunnel --edge-ip-version auto run --token ${ARGO_AUTH}"
   else
     ARGO_ARGS="tunnel --edge-ip-version auto --no-autoupdate --logfile argo.log --loglevel info --url http://localhost:8080"
@@ -321,8 +373,7 @@ generate_pm2_file() {
 
   TLS=${NEZHA_TLS:+'--tls'}
 
-  if [[ -n "${NEZHA_SERVER}" && -n "${NEZHA_PORT}" && -n "${NEZHA_KEY}" ]]; then
-    cat > ecosystem.config.js << EOF
+  cat > ecosystem.config.js << EOF
 module.exports = {
   "apps":[
       {
@@ -333,38 +384,37 @@ module.exports = {
           "name":"argo",
           "script":"cloudflared",
           "args":"${ARGO_ARGS}"
+EOF
+
+  [[ -n "${NEZHA_SERVER}" && -n "${NEZHA_PORT}" && -n "${NEZHA_KEY}" ]] && cat >> ecosystem.config.js << EOF
       },
       {
           "name":"nezha",
           "script":"/app/nezha-agent",
-          "args":"-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}" 
-      }
-  ]
-}
+          "args":"-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}"
 EOF
-  else  
-    cat > ecosystem.config.js << EOF
-module.exports = {
-  "apps":[
-      {
-          "name":"web",
-          "script":"/app/web.js run"
+  
+  [ -n "${SSH_DOMAIN}" ] && cat >> ecosystem.config.js << EOF
       },
       {
-          "name":"argo",
-          "script":"cloudflared",
-          "args":"${ARGO_ARGS}"
+          "name":"ttyd",
+          "script":"/app/ttyd",
+          "args":"-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 222 bash"
+EOF
+
+  cat >> ecosystem.config.js << EOF
       }
   ]
 }
 EOF
-  fi
 }
 
 generate_config
 generate_argo
 generate_nezha
+generate_ttyd
 generate_pm2_file
 [ -e nezha.sh ] && bash nezha.sh
 [ -e argo.sh ] && bash argo.sh
+[ -e ttyd.sh ] && bash ttyd.sh
 [ -e ecosystem.config.js ] && pm2 start
