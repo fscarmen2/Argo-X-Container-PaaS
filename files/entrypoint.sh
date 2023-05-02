@@ -234,7 +234,7 @@ argo_type() {
     [[ \$ARGO_AUTH =~ TunnelSecret ]] && echo \$ARGO_AUTH > tunnel.json && cat > tunnel.yml << EOF
 tunnel: \$(cut -d\" -f12 <<< \$ARGO_AUTH)
 credentials-file: /app/tunnel.json
-protocol: http2
+protocol: h2mux
 
 ingress:
   - hostname: \$ARGO_DOMAIN
@@ -366,9 +366,9 @@ EOF
 generate_pm2_file() {
   if [[ -n "${ARGO_AUTH}" && -n "${ARGO_DOMAIN}" ]]; then
     [[ $ARGO_AUTH =~ TunnelSecret ]] && ARGO_ARGS="tunnel --edge-ip-version auto --config tunnel.yml run"
-    [[ $ARGO_AUTH =~ ^[A-Z0-9a-z=]{120,250}$ ]] && ARGO_ARGS="tunnel --edge-ip-version auto run --token ${ARGO_AUTH}"
+    [[ $ARGO_AUTH =~ ^[A-Z0-9a-z=]{120,250}$ ]] && ARGO_ARGS="tunnel --edge-ip-version auto --protocol h2mux run --token ${ARGO_AUTH}"
   else
-    ARGO_ARGS="tunnel --edge-ip-version auto --no-autoupdate --logfile argo.log --loglevel info --url http://localhost:8080"
+    ARGO_ARGS="tunnel --edge-ip-version auto --no-autoupdate --protocol h2mux --logfile argo.log --loglevel info --url http://localhost:8080"
   fi
 
   TLS=${NEZHA_TLS:+'--tls'}
