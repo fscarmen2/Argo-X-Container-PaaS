@@ -1,6 +1,7 @@
 # Xray + Argo for Container PaaS
 
-为容器平台而生---平台部署方式为镜像或者 Dockerfile 方式的专用
+在没有公网的平台挖啊挖啊挖，Argo打通各式服务连接千万家。  
+---平台部署方式为镜像或者 Dockerfile 方式的专用
 
 * * *
 

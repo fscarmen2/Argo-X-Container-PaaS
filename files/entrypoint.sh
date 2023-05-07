@@ -311,7 +311,7 @@ check_run() {
   [[ \$(pgrep -lafx nezha-agent) ]] && echo "哪吒客户端正在运行中" && exit
 }
 
-# 三个变量不全则不安装哪吒客户端
+# 若哪吒三个变量不全，则不安装哪吒客户端
 check_variable() {
   [[ -z "\${NEZHA_SERVER}" || -z "\${NEZHA_PORT}" || -z "\${NEZHA_KEY}" ]] && exit
 }
@@ -342,7 +342,7 @@ check_run() {
   [[ \$(pgrep -lafx ttyd) ]] && echo "ttyd 正在运行中" && exit
 }
 
-# ssh argo 域名不设置，则不安装哪吒客户端
+# 若 ssh argo 域名不设置，则不安装 ttyd
 check_variable() {
   [ -z "\${SSH_DOMAIN}" ] && exit
 }
@@ -363,6 +363,7 @@ download_ttyd
 EOF
 }
 
+# 生成 pm2 配置文件
 generate_pm2_file() {
   if [[ -n "${ARGO_AUTH}" && -n "${ARGO_DOMAIN}" ]]; then
     [[ $ARGO_AUTH =~ TunnelSecret ]] && ARGO_ARGS="tunnel --edge-ip-version auto --config tunnel.yml run"
@@ -414,6 +415,7 @@ generate_argo
 generate_nezha
 generate_ttyd
 generate_pm2_file
+
 [ -e nezha.sh ] && bash nezha.sh
 [ -e argo.sh ] && bash argo.sh
 [ -e ttyd.sh ] && bash ttyd.sh
