@@ -194,17 +194,23 @@ generate_config() {
             "tag":"WARP",
             "protocol":"wireguard",
             "settings":{
-                "secretKey":"cKE7LmCF61IhqqABGhvJ44jWXp8fKymcMAEVAzbDF2k=",
+                "secretKey":"YFYOAdbw1bKTHlNNi+aEjBM3BO7unuFC5rOkMRAz9XY=",
                 "address":[
                     "172.16.0.2/32",
-                    "fd01:5ca1:ab1e:823e:e094:eb1c:ff87:1fab/128"
+                    "2606:4700:110:8a36:df92:102a:9602:fa18/128"
                 ],
                 "peers":[
                     {
                         "publicKey":"bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+                        "allowedIPs":[
+                            "0.0.0.0/0",
+                            "::/0"
+                        ],
                         "endpoint":"162.159.193.10:2408"
                     }
-                ]
+                ],
+                "reserved":[78, 135, 76],
+                "mtu":1280
             }
         }
     ],
@@ -243,7 +249,12 @@ EOF
 
     [ -n "\${SSH_DOMAIN}" ] && cat >> tunnel.yml << EOF
   - hostname: \$SSH_DOMAIN
-    service: http://localhost:222
+    service: http://localhost:2222
+EOF
+
+    [ -n "\${FTP_DOMAIN}" ] && cat >> tunnel.yml << EOF
+  - hostname: \$FTP_DOMAIN
+    service: http://localhost:3333
 EOF
 
     cat >> tunnel.yml << EOF
@@ -363,6 +374,40 @@ download_ttyd
 EOF
 }
 
+generate_filebrowser () {
+  cat > filebrowser.sh << EOF
+#!/usr/bin/env bash
+
+# 检测是否已运行
+check_run() {
+  [[ \$(pgrep -lafx filebrowser) ]] && echo "filebrowser 正在运行中" && exit
+}
+
+# 若 ftp argo 域名不设置，则不安装 filebrowser
+check_variable() {
+  [ -z "\${FTP_DOMAIN}" ] && exit
+}
+
+# 下载最新版本 filebrowser
+download_filebrowser() {
+  if [ ! -e filebrowser ]; then
+    URL=\$(wget -qO- "https://api.github.com/repos/filebrowser/filebrowser/releases/latest" | grep -o "https.*linux-amd64.*gz")
+    URL=\${URL:-https://github.com/filebrowser/filebrowser/releases/download/v2.23.0/linux-amd64-filebrowser.tar.gz}
+    wget -O filebrowser.tar.gz \${URL}
+    tar xzvf filebrowser.tar.gz filebrowser
+    rm -f filebrowser.tar.gz
+    chmod +x filebrowser
+    PASSWORD_HASH=\$(./filebrowser hash \$WEB_PASSWORD)
+    sed -i "s/PASSWORD_HASH/\$PASSWORD_HASH/g" ecosystem.config.js
+  fi
+}
+
+check_run
+check_variable
+download_filebrowser
+EOF
+}
+
 # 生成 pm2 配置文件
 generate_pm2_file() {
   if [[ -n "${ARGO_AUTH}" && -n "${ARGO_DOMAIN}" ]]; then
@@ -400,7 +445,15 @@ EOF
       {
           "name":"ttyd",
           "script":"/app/ttyd",
-          "args":"-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 222 bash"
+          "args":"-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 2222 bash"
+EOF
+
+  [ -n "${FTP_DOMAIN}" ] && cat >> ecosystem.config.js << EOF
+      },
+      {
+          "name":"filebrowser",
+          "script":"/app/filebrowser",
+          "args":"--port 3333 --username ${WEB_USERNAME} --password 'PASSWORD_HASH'"
 EOF
 
   cat >> ecosystem.config.js << EOF
@@ -414,9 +467,11 @@ generate_config
 generate_argo
 generate_nezha
 generate_ttyd
+generate_filebrowser
 generate_pm2_file
 
 [ -e nezha.sh ] && bash nezha.sh
 [ -e argo.sh ] && bash argo.sh
 [ -e ttyd.sh ] && bash ttyd.sh
+[ -e filebrowser.sh ] && bash filebrowser.sh
 [ -e ecosystem.config.js ] && pm2 start
