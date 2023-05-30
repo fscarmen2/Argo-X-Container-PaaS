@@ -61,7 +61,7 @@
   | <URL>/list | 查看节点数据 |
   | <URL>/status | 查看后台进程 |
   | <URL>/listen | 查看后台监听端口 |
-  |  <URL>/test  | 测试是否为只读系统 |  
+  | <URL>/test  | 测试是否为只读系统 |  
   
 * GitHub Actions 用到的变量
 
@@ -125,8 +125,6 @@
 <img width="1001" alt="image" src="https://github.com/fscarmen2/aa/assets/92626977/5b5e0143-ba5a-4b6a-a7fd-e77ef9d0703e">
 
 <img width="1527" alt="image" src="https://github.com/fscarmen2/rrr/assets/92626977/91cece0d-cc61-4681-8eae-03f961a16976">
-
-## TTYD webssh 的部署
 
 ## 鸣谢下列作者的文章和项目:
 * 前端 JS 在大佬 Nike Jeff 的项目 基础上，为了通用性和扩展功能作修改，https://github.com/hrzyang/glitch-trojan
