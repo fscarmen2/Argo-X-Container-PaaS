@@ -9,7 +9,8 @@
 
 - [项目特点](README.md#项目特点)
 - [部署](README.md#部署)
-- [Argo Token的获取](README.md#argo-token-的获取)
+- [Argo Json 的获取](README.md#argo-json-的获取)
+- [Argo Token 的获取](README.md#argo-token-的获取)
 - [在 Koyeb 部署重点](README.md#在-koyeb-部署重点)
 - [在 Doprax 部署重点](README.md#在-doprax-部署重点)
 - [ttyd webssh / filebrowser webftp 的部署](README.md#ttyd-webssh--filebrowser-webftp-的部署)
@@ -72,6 +73,15 @@
   | DOCKER_REPO     | Dockerhub 库名 |
 
 
+## Argo Json 的获取
+
+用户可以通过 Cloudflare Json 生成网轻松获取: https://fscarmen.cloudflare.now.cc
+
+![image](https://user-images.githubusercontent.com/62703343/224388718-6adf22d0-01d3-46a0-8063-bc0a2210795f.png)
+
+如想手动，可以参考，以 Debian 为例，需要用到的命令，[Deron Cheng - CloudFlare Argo Tunnel 试用](https://zhengweidong.com/try-cloudflare-argo-tunnel)
+
+
 ## Argo Token 的获取
 
 详细教程: [群晖套件：Cloudflare Tunnel 内网穿透中文教程 支持DSM6、7](https://imnks.com/5984.html)
@@ -120,11 +130,11 @@
   
 <img width="1643" alt="image" src="https://user-images.githubusercontent.com/92626977/235453084-a8c55417-18b4-4a47-9eef-ee3053564bff.png">
 
-<img width="1303" alt="image" src="https://github.com/fscarmen2/aa/assets/92626977/652ef3ff-c9a9-4771-92c8-bab6c516abeb">
+<img width="1347" alt="image" src="https://user-images.githubusercontent.com/92626977/235453394-2d8fd1e9-02d0-4fa6-8c20-dda903fd06ae.png">
 
-<img width="1001" alt="image" src="https://github.com/fscarmen2/aa/assets/92626977/5b5e0143-ba5a-4b6a-a7fd-e77ef9d0703e">
+<img width="983" alt="image" src="https://user-images.githubusercontent.com/92626977/235453962-1001bcb8-e21d-4c1b-9b8f-6161706f5ccd.png">
 
-<img width="1527" alt="image" src="https://github.com/fscarmen2/rrr/assets/92626977/91cece0d-cc61-4681-8eae-03f961a16976">
+<img width="1540" alt="image" src="https://user-images.githubusercontent.com/92626977/235454653-3ac83b16-b6f4-477b-bccf-2cce8bcfbabe.png">
 
 ## 鸣谢下列作者的文章和项目:
 * 前端 JS 在大佬 Nike Jeff 的项目 基础上，为了通用性和扩展功能作修改，https://github.com/hrzyang/glitch-trojan
