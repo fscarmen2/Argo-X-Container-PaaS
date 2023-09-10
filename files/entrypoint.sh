@@ -423,37 +423,47 @@ generate_pm2_file() {
 module.exports = {
   "apps":[
       {
-          "name":"web",
-          "script":"/app/web.js run"
+          name: 'web',
+          script: '/app/web.js run',
+          out_file: "/dev/null",
+          error_file: "/dev/null"
       },
       {
-          "name":"argo",
-          "script":"cloudflared",
-          "args":"${ARGO_ARGS}"
+          name: 'argo',
+          script: 'cloudflared',
+          args: "${ARGO_ARGS}",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
 
   [[ -n "${NEZHA_SERVER}" && -n "${NEZHA_PORT}" && -n "${NEZHA_KEY}" ]] && cat >> ecosystem.config.js << EOF
       },
       {
-          "name":"nezha",
-          "script":"/app/nezha-agent",
-          "args":"-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}"
+          name: 'nezha',
+          script: '/app/nezha-agent',
+          args: "-s ${NEZHA_SERVER}:${NEZHA_PORT} -p ${NEZHA_KEY} ${TLS}",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
 
   [ -n "${SSH_DOMAIN}" ] && cat >> ecosystem.config.js << EOF
       },
       {
-          "name":"ttyd",
-          "script":"/app/ttyd",
-          "args":"-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 2222 bash"
+          name: 'ttyd',
+          script: '/app/ttyd',
+          args: "-c ${WEB_USERNAME}:${WEB_PASSWORD} -p 2222 bash",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
 
   [ -n "${FTP_DOMAIN}" ] && cat >> ecosystem.config.js << EOF
       },
       {
-          "name":"filebrowser",
-          "script":"/app/filebrowser",
-          "args":"--port 3333 --username ${WEB_USERNAME} --password 'PASSWORD_HASH'"
+          name: 'filebrowser',
+          script: '/app/filebrowser',
+          args: "--port 3333 --username ${WEB_USERNAME} --password 'PASSWORD_HASH'",
+          out_file: "/dev/null",
+          error_file: "/dev/null"
 EOF
 
   cat >> ecosystem.config.js << EOF
